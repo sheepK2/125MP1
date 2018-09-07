@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, wtfStartTimeRange } from '@angular/core';
 import { NavController } from 'ionic-angular';
 
 //created Resource interface
 import { Resource } from './resource.interface';
+import { notImplemented } from '../../../node_modules/@angular/core/src/render3/util';
 
 @Component({
   selector: 'page-home',
@@ -10,8 +11,10 @@ import { Resource } from './resource.interface';
 })
 
 export class HomePage {
-  max: number = 30
-  min: number = 1
+
+  randomRange: Array<number> =[]
+  max: number = 29
+  min: number = 0
   resourcesNum: number
   usersNum: number
   userResources: number
@@ -21,7 +24,7 @@ export class HomePage {
   arrayOfUsers: Array<number> = []
 
   resourceObject = {} as Resource //new Object
-  asdfghjkl: Array<Resource> = [] //asdfghjk.resourceName/resourceTime/resourceStatus
+  resourceLineUp: Array<Resource> = []
 
 
   constructor(public navCtrl: NavController) {
@@ -35,6 +38,7 @@ export class HomePage {
     this.time = 0
 
     this.resourceObject = {} as Resource     //creating a new object
+    this.resourceLineUp = []
     this.actualResources = []
     this.arrayOfUsers = []
     this.start()
@@ -58,15 +62,46 @@ export class HomePage {
     console.log("Resources:");
     console.log(this.actualResources);
 
+    this.assigning()    
+
   }
+///////////////////////////////////////////////////////////////////////////RANDOMIZING
+  // randomizer(min,max) {
+  //   //console.log("Randomizing");
+  //   this.randomRange = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,26, 27,28, 29, 30]
+
+  //   let ranNum: number
+  //   let ranIndex: number
+  //   ranIndex = Math.floor(Math.random() * (max + min - 1)) + min
+  //   ranNum = this.randomRange[ranIndex]
+  //   this.randomRange.splice(ranIndex, 1)
+    
+  //   // console.log(ranNum)
+  //   return ranNum
+
+  // }
 
   randomizer(min,max) {
     //console.log("Randomizing");
+    this.randomRange = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+      
     let ranNum: number
+    let ranIndex: number
     ranNum = Math.floor(Math.random() * (max + min - 1)) + min
+    ranIndex = ranNum+1
+    if(this.randomRange[ranIndex] != 0){
+      ranNum = this.randomRange[ranIndex]
+      this.randomRange[ranIndex] = 0
+    } else 
+      if(this.randomRange[ranIndex] == 0) {
+      this.randomizer(this.min, this.max)
+    }
+    // this.randomRange.splice(ranIndex, 1)
     // console.log(ranNum)
     return ranNum
+
   }
+
 
   numRandomize(length) {
     this.numArray = [] //reset the array
@@ -83,12 +118,38 @@ export class HomePage {
     // console.log(this.numArray)
     return this.numArray
   }
+  ///////////////////////////////////////////////////////////////////////////RANDOMIZING
 
   assigning(){
     let e: any
-    for(e in this.actualResources){
-
+    let temp: any
+    let assignment: any
+    for (e in this.actualResources){
+      // console.log(e)
+      temp = e;
+      e = {} as Resource
+      e.resourceName = this.actualResources[temp] 
+      assignment = this.randomizer(0, this.arrayOfUsers.length)
+      // console.log("ASSIGNMENT")
+      // console.log(assignment)
+      if (assignment == this.arrayOfUsers.length){
+        e.resourceStatus = false;
+        e.resourceTime = 0
+        this.resourceLineUp.push(e)
+      } else {
+        e.user = this.arrayOfUsers[assignment]
+        // console.log(e.user)
+        e.resourceStatus = true;
+        e.resourceTime = this.randomizer(this.min, this.max)
+        this.resourceLineUp.push(e)
+      }
+      // console.log(this.resourceLineUp)
     }
+    console.log(e)
+    console.log("ASSIGNMENT")
+    console.log(assignment)
+    console.log(e.user)
+    console.log(this.resourceLineUp)
   }
 
 
