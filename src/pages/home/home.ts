@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 
-//created Resource interface
-//import { Resource } from './resource.interface';
-//import { User } from './user.interface';
+import { Resource } from './resource.interface'; // created Resource interface (object)
+import { User } from './user.interface'; // created User interface (object)
 
 @Component({
   selector: 'page-home',
@@ -13,7 +12,8 @@ import { NavController } from 'ionic-angular';
 export class HomePage {
 
   givenRange: Array<number> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
-  resourcesList: Array<number> = []
+  resourcesList: Array<Resource> = []
+  usersList: Array<User> = []
   min: number = 1
   max: number = 30
   min2: number = 0
@@ -21,11 +21,23 @@ export class HomePage {
   numUsers: number
   numResources: number
 
+  //resource = {} as Resource
+
   constructor(public navCtrl: NavController) {
   }
 
   start() {
     //renew variables
+    this.min = 1
+    this.max = 30
+    this.min2 = 0
+    this.max2 = 29
+    this.numResources = 0
+    this.numUsers = 0
+    this.resourcesList = []
+    this.usersList = []
+    this.givenRange = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+
     this.execute()
 
   }
@@ -41,28 +53,38 @@ export class HomePage {
     this.numResources = this.singleRandomizer(this.min, this.max)
     console.log(this.numResources)
 
-    console.log("Randomizing List of Resources:")
-    this.resourcesList = this.arrayRandomizer(this.resourcesList, this.numResources)
+    console.log("Randomized List of Users:")
+    this.usersList = this.arrayRandomizer(this.usersList, this.numUsers, this.max2).sort((n1, n2) => n1 - n2);
+    console.log(this.usersList)
+
+    console.log("Randomized List of Resources:")
+    this.resourcesList = this.arrayRandomizer(this.resourcesList, this.numResources, this.max2).sort((n1, n2) => n1 - n2);
     console.log(this.resourcesList)
 
+    console.log("Assigning Resources:")
+
+  }
+
+  assignResource() {
+    
   }
 
   singleRandomizer(minimum, maximum) {
     return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
   }
 
-  arrayRandomizer(arr, numElements) {
+  arrayRandomizer(arr, numElements, decLen) {
     let fromArray = this.givenRange
     let x
     while (numElements != 0) {
-      let index = Math.floor(Math.random() * (this.max2 - this.min2 + 1)) + this.min2; // choose from 0 tp 29 as index
+      let index = Math.floor(Math.random() * (decLen - this.min2 + 1)) + this.min2; // choose from 0 tp 29 as index
       x = fromArray.splice(index, 1)
-      arr.push(x)
+      decLen--
+      arr.push(x[0])
       numElements--
     }
+    this.givenRange = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
     return arr
   }
-
-
 
 }
