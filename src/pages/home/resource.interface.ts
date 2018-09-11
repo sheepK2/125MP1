@@ -1,6 +1,5 @@
-export interface Resource {
-    resourceName: string;
-    resourceTime: number;
-    resourceStatus: boolean;
-    user: number;
-}
+//   export interface Resource {
+//     name: number;
+//     time: number;
+//     status: boolean;
+// }
