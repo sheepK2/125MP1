@@ -3,7 +3,7 @@ import { NavController } from 'ionic-angular';
 
 //created Resource interface
 import { ResourceCard } from './resource-card.interface';
-// import { Resource} from './resource.interface';
+import { Resource} from './resource.interface';
 import { User } from './user.interface';
 
 @Component({
@@ -18,18 +18,19 @@ export class HomePage {
   max: number = 10
   randomUserLimit: number;
   randomResourceLimit: number;
-  generatedUsers: Array<number>;
-  generatedtemp: Array<number>;
   randomizedArray: Array<number>;  
-  generatedResources: Array<number>;
-   
+  generatedResources: Array<number>; 
+  generatedUsers: Array<number>;
 
   resourceCard = {} as ResourceCard //new Object
-  resourceCardArray: Array<ResourceCard> = []
-  // resourceObject = {} as Resource //new Object
-  // resourceQueue: Array<Resource> = []
+  resourceCardArray: Array<ResourceCard>;
+
+  resourceObject = {} as Resource //new Object
+  resourceQueue: Array<Resource>;
   userObject = {} as User //new Object
-  arrayOfUsersObject: Array<User> = []
+  arrayOfUsersObject: Array<User>;
+  sortedRes: Array<number>;
+  sortedUser: Array<number>;
 
 
   constructor(public navCtrl: NavController) {  
@@ -52,10 +53,7 @@ export class HomePage {
     console.log(this.randomResourceLimit);
     
     console.log("Generating random resources and users");
-    this.generate(this.randomRange, this.randomResourceLimit, this.randomUserLimit);  
-
-    console.log("Generating objects");
-    this.generateObjects();
+    this.generate(this.randomRange);  
   }
 
   // returns a random number
@@ -103,82 +101,96 @@ export class HomePage {
     return res;
   }
 
-  generate(arr, res, users){
+  generate(arr){
     console.log("---------------")
-    this.generatedResources = this.generateRandomResources(arr, res)
-    this.generatedUsers = this.generateRandomUsers(arr, users)
-   console.log("....................")
-  }
+    this.generatedResources = this.generateRandomResources(arr, this.randomResourceLimit)
+    this.generatedUsers = this.generateRandomUsers(arr, this.randomUserLimit)
+    this.sortedRes = this.generatedResources.sort((n1,n2) => n1 - n2)
+    this.sortedUser = this.generatedUsers.sort((n1,n2) => n1 - n2) 
 
-  generateObjects(){
-    this.generateResourceObjects(this.generatedResources);
-    this.generateUsersObjects(this.generatedUsers);
-  }
+    console.log("RES: " + this.sortedRes)
+    console.log("USERS: " + this.sortedUser)
 
-  //generate n number of object resources
-  generateResourceObjects(r){
-    this.resourceCardArray = []
-    r = this.generatedResources
-    let i:number = 0;
-      for(i; i != r.length; i++){                 // create new object ----> queue , status, name, time, currentUser
-        this.resourceCard = {} as ResourceCard
-        this.resourceCard.resourceName = this.generatedResources[i];
-        this.resourceCard.resourceStatus = true;
-        this.resourceCard.resourceTime = 0; 
-        this.resourceCardArray.push(this.resourceCard) //push that object to an array of resource objects
-        }
-    console.log(this.resourceCardArray);
-    return this.resourceCardArray
+    this.generateResourceCard(this.sortedRes);
+    // this.generateUsersObjects(this.generatedUsers, this.randomUserLimit);
+    console.log("....................")
   }
 
   
   //generate n number of object resources
-  generateUsersObjects(u){
-    this.arrayOfUsersObject = []
-    let res: Array<number> = [] 
-    res = this.generatedResources
+  generateResourceCard(arr){
+    this.resourceQueue = []
+    this.resourceCardArray = []
+    this.arrayOfUsersObject = this.generateUsersObjects(this.sortedUser, this.randomUserLimit)
+    arr = this.sortedRes.sort((n1,n2) => n1 - n2)
+    let i:number = 0;
+      for(i; i != arr.length; i++){                 // create new object ----> queue , status, name, time, currentUser
+        this.resourceCard = {} as ResourceCard
+        this.resourceCard.resourceName = arr[i];
+        this.resourceCard.resourceStatus = true;
+        this.resourceCard.resourceTime = 0; 
+        this.resourceCard.userQueue = [];
+        this.resourceCardArray.push(this.resourceCard) //resource card object
+        }
+        this.distribute(this.resourceCardArray);
+        console.log("Resource Cards:");
+        console.log(this.resourceCardArray);
+      return this.resourceCardArray
+  }
 
+  
+  //generate n number of object resources
+  generateUsersObjects(arr, limit){
+    
+    this.arrayOfUsersObject = []
+    let sorted: Array<number> = []
+    let res: Array<number> = []
+    let users: Array<number> = []
+    let resTemp: Array<number> = []
+    users = this.sortedUser
+    // sorted = users.sort((n1,n2) => n1 - n2)
+    res = this.generatedResources
     let i:number = 0;
     
         // create new object ----> queue , status, name, time, currentUser
-      for(i; i != u.length; i++){
+      for(i; i != users.length; i++){
         this.userObject = {} as User
-        this.userObject.userName = this.generatedUsers[i];
-        this.userObject.userTime = this.Randomizer(this.min, this.max);
+        this.userObject.userName = users[i];
+        this.userObject.userTime = 0;
         this.userObject.userResourcesLim = this.Randomizer(this.min, this.randomResourceLimit);
-        //array of resources per user
-        this.generatedtemp = this.generateRandomResources(res,this.userObject.userResourcesLim)
-        // this.userObject.usersResources = this.singleResourceObject(this.generatedtemp)
-        this.userObject.usersResources = this.generatedtemp
+        resTemp = this.randomResult(this.shuffle(res), this.userObject.userResourcesLim);
+        sorted = resTemp.sort((n1,n2) => n1 - n2)
+        this.userObject.usersResources = this.objectResources(sorted);
+        // this.userObject.usersResources = this.objectResources(resTemp);
         this.arrayOfUsersObject.push(this.userObject) //push that object to an array of resource objects
         }
-    
-          // console.log(singleRes)
-        console.log(this.arrayOfUsersObject);
+        
+    console.log("Array of User Objects");
+    console.log(this.arrayOfUsersObject);
     return this.arrayOfUsersObject
   }
 
-  totalTime(arr){
-    let temp:number = 0; 
-    for(let i = 0; i != arr.length; i++){
-      temp += this.resourceCard.resourceTime
-    }
-    console.log(temp)
-    return temp
+  objectResources(arr){
+    let temp: Array<Resource> = [];
+    let hold: Resource;
+      for(let i=0; i!=arr.length; i++){
+        this.resourceObject = {} as Resource
+        this.resourceObject.name = arr[i]
+        this.resourceObject.time = this.Randomizer(this.min, this.max)
+        this.userObject.userTime += this.resourceObject.time
+        this.resourceObject.status = true;
+        temp.push(this.resourceObject);
+        hold = this.resourceObject
+      }
+    return temp;
   }
 
-  // singleResourceObject(arr){
-  //   let u = arr
-  //   this.resourceQueue = []
-  //   for(let i = 0; i != u.length; i++){
+  //add the resources to the resource cards
+  distribute(arr){
+    
+    for(let d = 0; d != arr.length; d++){
 
-  //     this.resourceObject = {} as Resource
-  //     this.resourceObject.name = u[i]
-  //     this.resourceObject.time = this.Randomizer(this.min, this.max)
-  //     this.resourceObject.status = true;
-  //     this.resourceQueue.push(this.resourceObject)
-  //   }
-  //   return this.resourceQueue
-  // }
 
+    }
+  }
 }

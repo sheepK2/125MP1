@@ -1,5 +1,5 @@
-//   export interface Resource {
-//     name: number;
-//     time: number;
-//     status: boolean;
-// }
+  export interface Resource {
+    name: number;
+    time: number;
+    status: boolean;
+}
