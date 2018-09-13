@@ -1,13 +1,45 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      Multiprogramming and Time-Sharing System
-    </ion-title>
-  </ion-navbar>
-</ion-header>
+    <ion-navbar>
+      <ion-title>
+        Multiprogramming and Time-Sharing System
+      </ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content>
+  
 
-<ion-content>
+    <button ion-button (click) = "execute()">Start</button>
+  
+    <ion-item>
+        <ion-label>Resources:</ion-label>
+        <ion-label>{{ randomResourceLimit }}</ion-label>
+        <ion-label>=</ion-label>
+        <ion-label>{{ sortedRes }}</ion-label>
+    </ion-item>
+  
+    <ion-item>
+        <ion-label>Users:</ion-label>
+        <ion-label>{{ randomUserLimit }}</ion-label>
+        <ion-label>=</ion-label>
+        <ion-label>{{ sortedUser }}</ion-label>
+    </ion-item>
+  
+    <ion-grid>
+        <ion-row>
+          <ion-col col-1 *ngFor = "let res of resourceCardArray">
+            <ion-card>
+              <ion-card-header>{{ res.resourceName }}</ion-card-header>
+              <ion-card-content>
+                <ion-label color = "danger">{{ res.resourceStatus }}</ion-label>
+                <ion-label color = "primary">{{ res.resourceTime }}</ion-label>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    
+  
+  
 
-  <button ion-button (click) = "execute()">Start</button>
-
-</ion-content>
+  </ion-content>

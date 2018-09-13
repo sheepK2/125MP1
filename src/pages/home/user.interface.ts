@@ -4,6 +4,6 @@ export interface User {
     userName: number;
     userTime: number;
     userResourcesLim: number;
-    usersResources: Array<Resource>;
+    usersResources: Array<number>;
 
 }

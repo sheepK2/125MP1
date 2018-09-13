@@ -5,6 +5,7 @@ import { NavController } from 'ionic-angular';
 import { ResourceCard } from './resource-card.interface';
 import { Resource} from './resource.interface';
 import { User } from './user.interface';
+import { CurrencyPipe } from '../../../node_modules/@angular/common';
 
 @Component({
   selector: 'page-home',
@@ -124,15 +125,54 @@ export class HomePage {
     this.arrayOfUsersObject = this.generateUsersObjects(this.sortedUser, this.randomUserLimit)
     arr = this.sortedRes.sort((n1,n2) => n1 - n2)
     let i:number = 0;
+    let c:number = 0;
+    let currentCard: ResourceCard
+    let currentUserRes: Array<number>
+    let currentRes:Array<number>//res2
+    let curr: User;
+    let index = 0;
+    // let hold = 0;
+
       for(i; i != arr.length; i++){                 // create new object ----> queue , status, name, time, currentUser
         this.resourceCard = {} as ResourceCard
         this.resourceCard.resourceName = arr[i];
         this.resourceCard.resourceStatus = true;
         this.resourceCard.resourceTime = 0; 
         this.resourceCard.userQueue = [];
-        this.resourceCardArray.push(this.resourceCard) //resource card object
+        this.resourceCardArray.push(this.resourceCard) //resource card object  
         }
-        this.distribute(this.resourceCardArray);
+        let u = this.arrayOfUsersObject.length
+        let r = this.resourceCardArray.length
+        console.log("length of resource card: " + r);
+        // u = 1;
+        // console.log("users: " + u);
+        // console.log("cards: " + r);
+        
+        for(let x = 0; x != u; x++){ // loop one user
+          curr = this.arrayOfUsersObject[x] //one user
+          currentUserRes = curr.usersResources //res of that user
+          // console.log("current user resources:");
+          // console.log(currentUserRes)
+          for(let y = 0; y != currentUserRes.length; y++){ //loop resources of one user
+            let hold = currentUserRes[y]
+            // console.log("hold: " + hold) //single value
+            // console.log(this.resourceCardArray);
+            let currentCard = this.resourceCardArray
+            for(let z = 0; z != r; z++){
+              // console.log(currentCard[z]);
+              console.log("current user res num: " + currentUserRes[y] + "====" + currentCard[z].resourceName); 
+              if(currentUserRes[y] == currentCard[z].resourceName ) {
+                  currentCard[z].userQueue.push(curr.userName);
+                  console.log("hereee")
+              }
+            }
+            console.log(currentCard);
+            // let currentCardName = currentCard.resourceName
+            
+          }
+        }
+
+        // this.distribute(this.resourceCardArray);
         console.log("Resource Cards:");
         console.log(this.resourceCardArray);
       return this.resourceCardArray
@@ -160,8 +200,9 @@ export class HomePage {
         this.userObject.userResourcesLim = this.Randomizer(this.min, this.randomResourceLimit);
         resTemp = this.randomResult(this.shuffle(res), this.userObject.userResourcesLim);
         sorted = resTemp.sort((n1,n2) => n1 - n2)
-        this.userObject.usersResources = this.objectResources(sorted);
-        // this.userObject.usersResources = this.objectResources(resTemp);
+        // this.userObject.usersResources = this.objectResources(sorted);
+        this.userObject.usersResources = sorted;
+        // this.tally(sorted)
         this.arrayOfUsersObject.push(this.userObject) //push that object to an array of resource objects
         }
         
@@ -169,6 +210,8 @@ export class HomePage {
     console.log(this.arrayOfUsersObject);
     return this.arrayOfUsersObject
   }
+
+  
 
   objectResources(arr){
     let temp: Array<Resource> = [];

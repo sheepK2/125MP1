@@ -2,7 +2,7 @@ import { User } from './user.interface';
 import { Resource } from './resource.interface';
 
 export interface ResourceCard {
-    userQueue: Array<Resource>;
+    userQueue: Array<number>;   
     resourceStatus: boolean;
     resourceName: number;
     resourceTime: number; //total time of resource usage
