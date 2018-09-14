@@ -5,7 +5,6 @@ import { NavController } from 'ionic-angular';
 import { ResourceCard } from './resource-card.interface';
 import { Resource} from './resource.interface';
 import { User } from './user.interface';
-import { CurrencyPipe } from '../../../node_modules/@angular/common';
 
 @Component({
   selector: 'page-home',
