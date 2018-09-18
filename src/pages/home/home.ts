@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, Card } from 'ionic-angular';
+import { NavController } from 'ionic-angular';
 
 //created Resource interface
 import { ResourceCard } from './resource-card.interface';
@@ -15,7 +15,7 @@ export class HomePage {
   randomRange: Array<number> = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30];
 
   min: number = 2
-  max: number = 3
+  max: number = 5
   randomUserLimit: number;
   sortedRes: Array<number>;
   sortedUser: Array<number>;
@@ -28,6 +28,7 @@ export class HomePage {
   resourceObject = {} as Resource //new Object
   resourceCard = {} as ResourceCard //new Object
   resourceCardArray: Array<ResourceCard>;
+  display: Array<ResourceCard>;
   arrayOfUsersObject: Array<User>;
   resourceQueue: Array<Resource>;
   exeflow: Array<Resource>;
@@ -103,7 +104,8 @@ export class HomePage {
 
     this.generateResourceCard(this.sortedRes);
     this.usersResources(this.resourceCardArray);
-    this.execute(this.resourceCardArray) 
+    //this.execute(this.resourceCardArray)
+    this.kafourier(this.resourceCardArray)
     console.log("......... end ...........")
   }
 
@@ -198,6 +200,7 @@ export class HomePage {
       }
     }
     // x.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
+    this.resourceCardArray.sort((a, b) => a.resourceName < b.resourceName ? -1 : a.resourceName >  b.resourceName ? 1 : 0);
     this.exeflow.sort((a, b) => a.name < b.name ? -1 : a.name >  b.name ? 1 : 0);
     console.log("Array of User Objects");
     console.log(this.resourceCardArray)
@@ -206,42 +209,50 @@ export class HomePage {
     return this.resourceCardArray;
   }
 
-  execute(arr){
-    arr = this.resourceCardArray
-    let order = this.exeflow
-    let ctr: number;
-    console.log("order: ")
-    console.log(order)
-    console.log("arr: ")
-    console.log(arr)
-    
-    while( order.length != 0){
-      for(let z = 0; z != order.length; z++){
-        for(let x = 0 ; x != arr.length; x++){
-          console.log(arr[x])
-          for(let j = 0; j != arr[x].queueList.length; j++){
-            let char = arr[x].queueList[j].name
-
-            // console.log(char)
-            if(char == order[z].name){
-              ctr = order[z].time
-              while(ctr != 0){
-                ctr = ctr - 1;
-                console.log("ctr: " + ctr);
-              }
-              // order[z].time = ctr
-              arr[x].users.pop();
-              order[z].status = true
-            }
-            // arr[x].queueList[j].s
-          }
-          
-          arr[x].resourceStatus = true
-        }  
+  sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+      if ((new Date().getTime() - start) > milliseconds){
+        break;
       }
-      order.pop()
     }
-    console.log(arr)
-    return arr;
-  }  
+  }
+
+  kafourier(arr) {
+    this.display = this.resourceCardArray;
+    arr = this.display
+    let fourierArray: Array<Resource> = [];
+    let res = [];
+    let list;
+    let temp: Array<Resource> = [];
+
+    for (let i = 0; i != arr.length; i++) { //for all res card
+     list = arr[i].queueList
+      for(let x = 0; x != list.length; x++){
+        fourierArray.push(list[0])
+        console.log("this: " + fourierArray[x])
+        console.log("this: " + fourierArray[x].name)
+        if(list[x].name != fourierArray[x].name){
+          this.exeflow.push(list[x]);
+          while(list[x].time != 0){
+            console.log(list[x].time)
+            list[x].time--;
+          }
+        }
+        // this.sleep(1000);
+        list[x].status = true
+        fourierArray.push(list[x])
+      }
+      res.push(fourierArray)
+      fourierArray = []
+      arr[i].resourceStatus = true
+    }
+    console.log("res array: ")
+    console.log(this.display)
+    console.log("original")
+    console.log(this.resourceCardArray)
+    console.log("flow")
+    console.log(this.exeflow)
+    return this.display
+  }
 }

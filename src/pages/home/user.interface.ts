@@ -1,4 +1,4 @@
-import { Resource } from "./resource.interface";
+//import { Resource } from "./resource.interface";
 
 export interface User {
     userName: number;
