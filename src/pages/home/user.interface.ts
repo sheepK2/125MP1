@@ -1,5 +1,8 @@
+//import { Resource } from "./resource.interface";
 export interface User {
-    userName: string;
-    userResources: Array<number>;
+    userName: number;
     userTime: number;
+    userResourcesLim: number;
+    usersResources: Array<number>;
+
 }
