@@ -14,8 +14,8 @@ import { User } from './user.interface';
 export class HomePage {
   randomRange: Array<number> = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30];
 
-  min: number = 2
-  max: number = 5
+  min: number = 1
+  max: number = 30
   randomUserLimit: number;
   sortedRes: Array<number>;
   sortedUser: Array<number>;
@@ -31,6 +31,7 @@ export class HomePage {
   display: Array<ResourceCard>;
   arrayOfUsersObject: Array<User>;
   resourceQueue: Array<Resource>;
+  currentUsersRunning: Array<Resource>;
   exeflow: Array<Resource>;
   interval: number;
 
@@ -51,7 +52,7 @@ export class HomePage {
     
     console.log("Generating random resources and users");
     this.generate(this.randomRange);
-
+    this.currentUsersRunning = new Array<Resource>(this.randomUserLimit);
     this.interval = setInterval(()=>{this.kafourier(this.resourceCardArray)}, 1000);
   }
 
@@ -102,8 +103,8 @@ export class HomePage {
     this.sortedRes = this.generatedResources.sort((n1,n2) => n1 - n2)
     this.sortedUser = this.generatedUsers.sort((n1,n2) => n1 - n2) 
 
-    console.log("RES: " + this.sortedRes)
-    console.log("USERS: " + this.sortedUser)
+    // console.log("RES: " + this.sortedRes)
+    // console.log("USERS: " + this.sortedUser)
 
     this.generateResourceCard(this.sortedRes);
     this.usersResources(this.resourceCardArray);
@@ -193,7 +194,7 @@ export class HomePage {
       for(let j = 0; j != currArr.length; j++){
         this.resourceObject = {} as Resource
         this.resourceObject.name = currArr[j];
-        this.resourceObject.status = false;
+        this.resourceObject.status = "queue";
         this.resourceObject.time = this.Randomizer(this.min, this.max)
         this.resourceQueue.push(this.resourceObject);
         currCard.queueList.push(this.resourceObject);  
@@ -219,6 +220,7 @@ export class HomePage {
       totalTime += currCard.resourceTime;
     }
 
+    // let i = 0;
     let res = [];
     let temp: Array<Resource> = [];
     if(totalTime <= 0){
@@ -231,13 +233,25 @@ export class HomePage {
       if(currCard.resourceTime > 0){
         if(list.length > 0){
           let topUser = list[0];
-          list[0].time--;
-          currCard.resourceTime--;
+          let index = list[0].name - 1;
+          if(this.currentUsersRunning[index] == null){
+            this.currentUsersRunning[index] = list[0];         
+          }
+
+          if(this.currentUsersRunning[index] === list[0]){
+            list[0].time--;
+            currCard.resourceTime--;    
+            list[0].status = "running";
+          }else{
+            list[0].status = "waiting";
+          }
 
           if(list[0].time <= 0){
-            list[0].status = true;
+            list[0].status = "done";
             list.shift();
             list.push(topUser);
+
+            this.currentUsersRunning[index] = null;
           }
         }
       }  

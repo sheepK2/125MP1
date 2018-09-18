@@ -9,22 +9,30 @@
 
 <ion-content>
 
-
-  <button ion-button (click) = "start()">Start</button>
-
-  <ion-item>
-      <ion-label>Resources:</ion-label>
-      <ion-label>{{ randomResourceLimit }}</ion-label>
-      <ion-label>=</ion-label>
-      <ion-label>{{ sortedRes }}</ion-label>
-  </ion-item>
-
-  <ion-item>
-      <ion-label>Users:</ion-label>
-      <ion-label>{{ randomUserLimit }}</ion-label>
-      <ion-label>=</ion-label>
-      <ion-label>{{ sortedUser }}</ion-label>
-  </ion-item>
+  <button ion-button block color="secondary"  (click) = "start()" large>
+    S  T  A  R  T
+  </button>
+    
+  <div>
+      <ion-item>
+          <ion-label><b>Total number of Resources:</b></ion-label>
+          <ion-label>{{ randomResourceLimit }}</ion-label>
+          <ion-label><b>Resources:</b></ion-label>
+          <ion-label>{{ sortedRes }}</ion-label>
+      </ion-item>
+  </div>
+  <div>
+      <ion-item>
+          <ion-label><b>
+             Total number of Users: 
+            </b>
+              </ion-label>
+          <ion-label>{{ randomUserLimit }}</ion-label>
+          <ion-label><b>Users: </b></ion-label>
+          <ion-label>{{ sortedUser }}</ion-label>
+      </ion-item>
+  </div>
+  
 
 
   <ion-grid>
@@ -54,12 +62,14 @@
             <ion-row *ngFor = "let x of res.queueList">
               
                 <ion-col>
-                  <div>{{ x.name }}</div>
+                  <b>
+                      <div>{{ x.name }}</div>
+                  </b>
                 </ion-col>
 
                 <ion-col> 
                   <div>{{ x.time }}</div>
-                  
+
                 </ion-col>
                 
                 <ion-col>
