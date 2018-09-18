@@ -32,6 +32,7 @@ export class HomePage {
   arrayOfUsersObject: Array<User>;
   resourceQueue: Array<Resource>;
   exeflow: Array<Resource>;
+  interval: number;
 
 
   constructor(public navCtrl: NavController) {    }
@@ -49,7 +50,9 @@ export class HomePage {
     console.log(this.randomResourceLimit);
     
     console.log("Generating random resources and users");
-    this.generate(this.randomRange); 
+    this.generate(this.randomRange);
+
+    this.interval = setInterval(()=>{this.kafourier(this.resourceCardArray)}, 1000);
   }
 
   // returns a random number
@@ -105,7 +108,6 @@ export class HomePage {
     this.generateResourceCard(this.sortedRes);
     this.usersResources(this.resourceCardArray);
     //this.execute(this.resourceCardArray)
-    this.kafourier(this.resourceCardArray)
     console.log("......... end ...........")
   }
 
@@ -209,50 +211,38 @@ export class HomePage {
     return this.resourceCardArray;
   }
 
-  sleep(milliseconds) {
-    var start = new Date().getTime();
-    for (var i = 0; i < 1e7; i++) {
-      if ((new Date().getTime() - start) > milliseconds){
-        break;
-      }
-    }
-  }
-
   kafourier(arr) {
-    this.display = this.resourceCardArray;
-    arr = this.display
-    let fourierArray: Array<Resource> = [];
-    let res = [];
-    let list;
-    let temp: Array<Resource> = [];
+    
+    let totalTime = 0;
+    for (let i = 0; i < this.resourceCardArray.length; i++) { //for all res card
+      let currCard = this.resourceCardArray[i];
+      totalTime += currCard.resourceTime;
+    }
 
-    for (let i = 0; i != arr.length; i++) { //for all res card
-     list = arr[i].queueList
-      for(let x = 0; x != list.length; x++){
-        fourierArray.push(list[0])
-        console.log("this: " + fourierArray[x])
-        console.log("this: " + fourierArray[x].name)
-        if(list[x].name != fourierArray[x].name){
-          this.exeflow.push(list[x]);
-          while(list[x].time != 0){
-            console.log(list[x].time)
-            list[x].time--;
+    let res = [];
+    let temp: Array<Resource> = [];
+    if(totalTime <= 0){
+      clearInterval(this.interval);
+    }
+
+    for (let i = 0; i < this.resourceCardArray.length; i++) { //for all res card
+      let currCard = this.resourceCardArray[i];
+      let list = currCard.queueList;
+      if(currCard.resourceTime > 0){
+        if(list.length > 0){
+          let topUser = list[0];
+          list[0].time--;
+          currCard.resourceTime--;
+
+          if(list[0].time <= 0){
+            list[0].status = true;
+            list.shift();
+            list.push(topUser);
           }
         }
-        // this.sleep(1000);
-        list[x].status = true
-        fourierArray.push(list[x])
-      }
-      res.push(fourierArray)
-      fourierArray = []
-      arr[i].resourceStatus = true
+      }  
     }
-    console.log("res array: ")
-    console.log(this.display)
-    console.log("original")
     console.log(this.resourceCardArray)
-    console.log("flow")
-    console.log(this.exeflow)
     return this.display
   }
 }

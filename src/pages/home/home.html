@@ -32,21 +32,22 @@
       <ion-row>
         <ion-col col-xl-2 *ngFor = "let res of resourceCardArray">
           <ion-card>
-            <ion-card-header>
+            <ion-card-header> RESOURCE NAME: <b>
               {{ res.resourceName }}
-              <ion-label>Total Time: {{ res.resourceTime }}</ion-label>
+            </b>
+            <ion-label>Total Time: <b> {{ res.resourceTime }} </b></ion-label>
             </ion-card-header>
             <ion-card-content>
                 <ion-row>
                     <ion-col>
-                      <div>NAME</div>
-                    </ion-col>
+                      <b> <div>NAME</div> </b>
+                      </ion-col>
                     <ion-col> 
-                      <div>TIME</div>
-                    </ion-col>
+                      <b> <div>TIME</div> </b>
+                      </ion-col>
                     <ion-col>
-                      <div>STATUS</div>
-                    </ion-col>
+                      <b> <div>STATUS</div> </b>
+                      </ion-col>
                  </ion-row>
             </ion-card-content>
 
@@ -58,6 +59,7 @@
 
                 <ion-col> 
                   <div>{{ x.time }}</div>
+                  
                 </ion-col>
                 
                 <ion-col>
